@@ -1,56 +1,104 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Grande Kermesse Scolaire</title>
-    <style>
-        body { font-family: Arial, sans-serif; }
-        h1 { text-align: center; }
-        .container { width: 80%; margin: auto; }
-        .responsive { max-width: 100%; height: auto; }
-        .ticket-form, .payment-methods { margin: 20px 0; }
-        @media (max-width: 600px) {
-            .container { width: 100%; }
-        }
-    </style>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="container">
-        <h1>Welcome to Grande Kermesse Scolaire</h1>
-        <div class="admin-panel">
-            <h2>Admin Panel</h2>
-            <!-- Place for admin functionalities -->
-        </div>
-        <div class="ticket-system">
-            <h2>Ticket Purchase</h2>
-            <div class="ticket-form">
-                <input type="text" id="ticketName" placeholder="Enter your name" />
-                <button onclick="buyTicket()">Buy Ticket</button>
+    <header>
+        <h1>Grande Kermesse Scolaire 2026</h1>
+    </header>
+    <nav>
+        <ul>
+            <li><a href="#home">Accueil</a></li>
+            <li><a href="#about">À Propos</a></li>
+            <li><a href="#tickets">Billetterie</a></li>
+            <li><a href="#contact">Contact</a></li>
+            <li><a href="#admin">Administration</a></li>
+        </ul>
+    </nav>
+    <main>
+        <section id="home">
+            <h2>Bienvenue à la Grande Kermesse Scolaire</h2>
+            <p>Rejoignez-nous pour une journée de fun et de festivités !</p>
+        </section>
+        <section id="about">
+            <h2>À Propos</h2>
+            <p>Des ateliers, des jeux, des spectacles, et bien plus encore !</p>
+        </section>
+        <section id="tickets">
+            <h2>Achetez vos billets</h2>
+            <button id="buyTicketBtn">Achetez un Billet</button>
+            <div id="ticketForm" style="display:none;">
+                <label for="ticketQty">Quantité:</label>
+                <input type="number" id="ticketQty" value="1" min="1">
+                <button id="purchaseBtn">Acheter</button>
             </div>
-            <div id="ticketConfirmation"></div>
-        </div>
-        <div class="payment-methods">
-            <h2>Payment Methods</h2>
-            <p>Pay via WhatsApp: +2250171489791 or +2250797546707</p>
-        </div>
-        <div class="qr-code">
-            <h2>Your QR Code</h2>
-            <img id="qrcode" class="responsive" />
-        </div>
-    </div>
+            <div id="qrCode" style="display:none;"></div>
+        </section>
+        <section id="contact">
+            <h2>Contact</h2>
+            <p>Pour toute question, contactez-nous via WhatsApp au <a href="https://wa.me/your_number">WhatsApp</a>.</p>
+        </section>
+        <section id="admin">
+            <h2>Panneau d'Administration</h2>
+            <button id="adminLoginBtn">Se Connecter</button>
+            <div id="adminPanel" style="display:none;">
+                <h3>Ventes</h3>
+                <table id="salesHistory">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Date</th>
+                            <th>Quantité</th>
+                            <th>Montant</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+                <p id="realTimeCounter">Billets Vendus : 0</p>
+            </div>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2026 Kermesse Scolaire. Tous droits réservés.</p>
+    </footer>
     <script>
-        function buyTicket() {
-            const name = document.getElementById('ticketName').value;
-            localStorage.setItem('ticketOwner', name);
-            document.getElementById('ticketConfirmation').innerText = `Ticket purchased for ${name}`;
-            generateQRCode(name);
+        const ticketForm = document.getElementById('ticketForm');
+        const buyTicketBtn = document.getElementById('buyTicketBtn');
+        const purchaseBtn = document.getElementById('purchaseBtn');
+        const qrCodeDiv = document.getElementById('qrCode');
+        const salesHistoryTableBody = document.querySelector('#salesHistory tbody');
+        const realTimeCounter = document.getElementById('realTimeCounter');
+        let totalTicketsSold = 0;
+
+        buyTicketBtn.onclick = () => {
+            ticketForm.style.display = ticketForm.style.display === 'none' ? 'block' : 'none';
+        };
+
+        purchaseBtn.onclick = () => {
+            const qty = parseInt(document.getElementById('ticketQty').value);
+            const ticketID = Math.random().toString(36).substring(2, 15);
+            const ticketData = { id: ticketID, date: new Date().toISOString(), quantity: qty, amount: qty * 10 };
+            localStorage.setItem(ticketID, JSON.stringify(ticketData));
+            totalTicketsSold += qty;
+            updateSalesHistory(ticketData);
+            generateQRCode(ticketID);
+        };
+
+        function updateSalesHistory(ticketData) {
+            const row = document.createElement('tr');
+            row.innerHTML = `<td>${ticketData.id}</td><td>${new Date(ticketData.date).toLocaleString()}</td><td>${ticketData.quantity}</td><td>${ticketData.amount}</td>`;
+            salesHistoryTableBody.appendChild(row);
+            realTimeCounter.textContent = `Billets Vendus : ${totalTicketsSold}`;
         }
 
-        function generateQRCode(text) {
-            const qrcode = document.getElementById('qrcode');
-            // Simple QR code generation using QR code API
-            qrcode.src = `https://api.qrserver.com/v1/create-qr-code/?data=${text}&size=100x100`;
+        function generateQRCode(ticketID) {
+            const qrCode = `https://api.qrserver.com/v1/create-qr-code/?data=${ticketID}`;
+            qrCodeDiv.innerHTML = `<img src="${qrCode}" alt="QR Code">`;
+            qrCodeDiv.style.display = 'block';
         }
     </script>
 </body>

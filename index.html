@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grande Kermesse Scolaire</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        h1 { text-align: center; }
+        .container { width: 80%; margin: auto; }
+        .responsive { max-width: 100%; height: auto; }
+        .ticket-form, .payment-methods { margin: 20px 0; }
+        @media (max-width: 600px) {
+            .container { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to Grande Kermesse Scolaire</h1>
+        <div class="admin-panel">
+            <h2>Admin Panel</h2>
+            <!-- Place for admin functionalities -->
+        </div>
+        <div class="ticket-system">
+            <h2>Ticket Purchase</h2>
+            <div class="ticket-form">
+                <input type="text" id="ticketName" placeholder="Enter your name" />
+                <button onclick="buyTicket()">Buy Ticket</button>
+            </div>
+            <div id="ticketConfirmation"></div>
+        </div>
+        <div class="payment-methods">
+            <h2>Payment Methods</h2>
+            <p>Pay via WhatsApp: +2250171489791 or +2250797546707</p>
+        </div>
+        <div class="qr-code">
+            <h2>Your QR Code</h2>
+            <img id="qrcode" class="responsive" />
+        </div>
+    </div>
+    <script>
+        function buyTicket() {
+            const name = document.getElementById('ticketName').value;
+            localStorage.setItem('ticketOwner', name);
+            document.getElementById('ticketConfirmation').innerText = `Ticket purchased for ${name}`;
+            generateQRCode(name);
+        }
+
+        function generateQRCode(text) {
+            const qrcode = document.getElementById('qrcode');
+            // Simple QR code generation using QR code API
+            qrcode.src = `https://api.qrserver.com/v1/create-qr-code/?data=${text}&size=100x100`;
+        }
+    </script>
+</body>
+</html>
